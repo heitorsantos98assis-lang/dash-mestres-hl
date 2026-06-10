@@ -1,1 +1,30 @@
+name: Atualizar dashboard
 
+on:
+  schedule:
+    - cron: '0 11-23/2 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests python-dotenv
+      - run: python atualizar_bi.py
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.MESTRES_META_ACCESS_TOKEN }}
+          META_AD_ACCOUNT_ID: ${{ secrets.MESTRES_META_AD_ACCOUNT_ID }}
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add index.html
+          if git diff --staged --quiet; then echo "Nada a commitar"; exit 0; fi
+          git commit -m "BI Mestres update"
+          git push
