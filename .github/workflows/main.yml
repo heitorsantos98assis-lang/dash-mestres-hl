@@ -27,4 +27,5 @@ jobs:
           git add index.html
           if git diff --staged --quiet; then echo "Nada a commitar"; exit 0; fi
           git commit -m "BI Mestres update"
+          git pull --rebase origin ${{ github.ref_name }}
           git push
